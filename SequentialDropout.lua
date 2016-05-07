@@ -12,13 +12,21 @@ function SequentialDropout:setp(p)
 end
 
 function SequentialDropout:updateOutput(input)
-   local hasUpdated = false
-   if self.inputSize ~= #input then
+   local hasEqualSize = false
+   if self.inputSize and #self.inputSize == input:dim() then
+      hasEqualSize = true
+      for i = 1,input:dim() do
+         if self.inputSize[i] ~= input:size(i) then
+            hasEqualSize = false
+            break
+         end
+      end
+   end
+   if not hasEqualSize then
       -- record input and output size
       self.inputSize = #input
       Parent.updateOutput(self, input)
       self.outputSize = #self.output
-      hasUpdated = true
    end
 
    if self.train and torch.rand(1)[1] < self.p then
@@ -26,7 +34,7 @@ function SequentialDropout:updateOutput(input)
       self.output:resize(self.outputSize):zero()
    else
       self.dropped = false
-      if not hasUpdated then
+      if hasEqualSize then
          Parent.updateOutput(self, input)
       end
       if not self.train then
