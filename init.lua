@@ -14,6 +14,7 @@ require('nn.Container')
 require('nn.Concat')
 require('nn.Parallel')
 require('nn.Sequential')
+require('nn.SequentialDropout')
 require('nn.DepthConcat')
 
 require('nn.Linear')
